@@ -1,6 +1,9 @@
 import Image from "next/image";
 import { getKeelServer } from "./keel/server";
 import { orderBy } from "lodash";
+import { redirect } from "next/navigation";
+import Link from "next/link";
+import Table from "./shared/components/Table";
 
 const keelClient = getKeelServer();
 
@@ -84,63 +87,46 @@ const TeamLogos = {
 };
 
 function TeamList({ teams }) {
+  const headers = ["Name", "Next Game", "Last Game", "Record"];
+  const columns = [
+    {
+      children: (info) => (
+        <div className="flex items-center">
+          <div className="flex-shrink-0 w-10 h-10">
+            <Image
+              className="w-full h-full rounded-full"
+              src={TeamLogos[info.name]}
+              alt=""
+              width={40}
+              height={40}
+            />
+          </div>
+          <div className="ml-3 text-black">{info.name}</div>
+        </div>
+      ),
+    },
+    {
+      children: (info) => <div>Next game</div>,
+    },
+    {
+      children: (info) => <div>Last game</div>,
+    },
+    {
+      children: (info) => <div>Record</div>,
+    },
+  ];
+
   return (
     <div className="bg-white p-8 rounded-md w-full">
       <div>
         <div className="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
           <div className="inline-block min-w-full shadow rounded-lg overflow-hidden">
-            <table className="min-w-full leading-normal">
-              <thead>
-                <tr>
-                  <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Name
-                  </th>
-                  <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Next Game
-                  </th>
-                  <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Last Game
-                  </th>
-                  <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Record
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {teams?.map((team) => (
-                  <tr key={team.id}>
-                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                      <div className="flex items-center">
-                        <div className="flex-shrink-0 w-10 h-10">
-                          <Image
-                            className="w-full h-full rounded-full"
-                            src={TeamLogos[team.name]}
-                            alt=""
-                            width={40}
-                            height={40}
-                          />
-                        </div>
-                        <div className="ml-3 text-black">{team.name}</div>
-                      </div>
-                    </td>
-                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                      <p className="text-gray-900 whitespace-no-wrap">
-                        {" "}
-                        Jan 21, 2020
-                      </p>
-                    </td>
-                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                      <p className="text-gray-900 whitespace-no-wrap">
-                        Jan 21, 2020
-                      </p>
-                    </td>
-                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                      <p className="text-gray-900 whitespace-no-wrap">24/82</p>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <Table
+              data={teams}
+              columns={columns}
+              headers={headers}
+              rowLink={(row) => `team/${row.id}`}
+            />
           </div>
         </div>
       </div>

@@ -1,21 +1,26 @@
 import Link from "next/link";
-
+import _ from "lodash";
 interface TableProps {
   data: Array<any>;
-  headers: Array<string>;
   columns: Array<{
     link?: string;
-    children: (info) => React.ReactNode;
+    header: string;
+    getBody: (info: any) => React.ReactNode;
   }>;
-  rowLink?: (rowInfo) => string;
+  rowLink?: (rowInfo: Record<string, unknown>) => string;
+  orderBy?: string | ((rowInfo: Record<string, unknown>) => string | number);
+  orderDir?: "asc" | "desc";
 }
 
 export default function Table({
   data,
-  headers,
   columns,
   rowLink = () => "#",
+  orderBy = "",
+  orderDir = "asc",
 }: TableProps) {
+  const headers = columns.map((column) => column.header);
+
   return (
     <table className="min-w-full leading-normal">
       <thead>
@@ -25,13 +30,13 @@ export default function Table({
               key={`${header}-${index}`}
               className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
             >
-              Name
+              {header}
             </th>
           ))}
         </tr>
       </thead>
       <tbody>
-        {data.map((row, rIndex) => (
+        {_.orderBy(data, orderBy, orderDir).map((row, rIndex) => (
           <tr key={`row-${rIndex}`}>
             {columns.map((column, index) => (
               <td
@@ -39,7 +44,7 @@ export default function Table({
                 key={`column-${index}`}
               >
                 <Link href={column.link ?? rowLink(row)}>
-                  {column.children(row)}
+                  {column.getBody(row)}
                 </Link>
               </td>
             ))}

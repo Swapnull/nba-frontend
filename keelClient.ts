@@ -225,8 +225,17 @@ export class APIClient extends CoreClient {
     constructor(config: RequestConfig) {
 		super(config);
 	}
+    getPlayer(i: GetPlayerInput) {
+        return this.request<Player | null>("getPlayer", i);
+    }
+    getPlayersOnTeam(i: GetPlayersForTeamProps) {
+        return this.request<GetPlayersForTeamResponse>("getPlayersOnTeam", i);
+    }
     updatePlayersOnTeam(i: UpdatePlayerTeamsProps) {
         return this.request<Any>("updatePlayersOnTeam", i);
+    }
+    getTeam(i: GetTeamInput) {
+        return this.request<Team | null>("getTeam", i);
     }
     getTeams(i?: GetTeamsInput) {
         return this.request<{results: Team[], pageInfo: any}>("getTeams", i);
@@ -256,6 +265,18 @@ export interface UpdateTeamProps {
 export interface UpdatePlayerTeamsProps {
     overrideDateProtection?: boolean | null;
     teamId: string;
+}
+export interface GetPlayersForTeamProps {
+    teamId: string;
+}
+export interface GetPlayersForTeamResponse {
+    players: Player[];
+}
+export interface GetPlayerInput {
+    id: string;
+}
+export interface GetTeamInput {
+    id: string;
 }
 export interface GetTeamsWhere {
 }
@@ -342,6 +363,7 @@ export interface Team {
     name: string
     conference: string
     division: string
+    alias: string | null
     id: string
     createdAt: Date
     updatedAt: Date
